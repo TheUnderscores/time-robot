@@ -12,3 +12,12 @@ def create_button(x, y, w, h, text, on_click):
     in `on_click`
     """
     pass
+
+def draw_text_box(x, y, w, h, text):
+    """
+    Creates a text box to provide player information in text form.
+    Caller is responsible for making sure that the provided text
+    is small enough to fit within the text box (less that `w` x `h`
+    characters)
+    """
+    pass
