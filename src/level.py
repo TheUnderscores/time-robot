@@ -12,7 +12,9 @@ class Level:
                 for j in range(width):
                     row.append([])
         else:
-            self.ent_field = ent_field                    
+            self.ent_field = ent_field
+        self.height = len(self.ent_field)
+        self.width  = len(self.ent_field[0])
 
     def cells(self):
         """Iterate over each cell in the level, get a position and list of things in that cell"""
@@ -46,7 +48,7 @@ class Level:
             for ent in cell:
                 if isinstance(ent, type):
                     yield ent
-
+                    
     def destroy(self,point):
         """Destroys all entities at point"""
         self.ent_field[self.y][self.x] = []
