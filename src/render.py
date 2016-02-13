@@ -21,3 +21,9 @@ def draw_text_box(x, y, w, h, text):
     characters)
     """
     pass
+
+def add_status_text(text):
+    """
+    Add text to global status text box.
+    """
+    pass
