@@ -4,7 +4,8 @@ lua = LuaRuntime(unpack_returned_tuples=True)
 
 sandbox = lua.require('sandbox')
 
-print('Code to run?')
-luacode = input('> ')
+while True:
+	print('Code to run?')
+	luacode = input('> ')
 
-print(sandbox.run(luacode))
+	print(sandbox.run(luacode))

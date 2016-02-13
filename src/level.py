@@ -12,7 +12,6 @@ class Level:
                     row.append([])
         else:
             self.ent_field = ent_field                    
-        pass
 
     def cells(self):
         """Iterate over each cell in the level, get a position and list of things in that cell"""
@@ -39,7 +38,6 @@ class Level:
                 if ent in cell:
                     self.add(cell.delete(ent),to_point)
                     return
-                
 
     def destroy(self,point):
         """Destroys all entities at point"""

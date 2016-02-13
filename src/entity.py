@@ -1,3 +1,5 @@
+class EntityNotFound(BaseException)
+
 class Entity:
     def __init__(self,level=None):
         """Creates a new entity. If level is not specified, some functions (such as position) may not work"""
@@ -5,5 +7,7 @@ class Entity:
 
     def position(self):
         """Gets the entity's current position as a Point"""
-        pass
-    
+        for pos,cell in self.__level.cells:
+            if self in cell:
+                return pos
+        raise EntityNotFound("Wasn't able to find position of Entity in level")
