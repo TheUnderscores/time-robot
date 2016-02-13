@@ -18,7 +18,7 @@ class Level:
         """Iterate over each cell in the level, get a position and list of things in that cell"""
         for i,row in enumerate(self.ent_field):
             for j,cell in enumerate(row):
-                yield Point.new(i,j)
+                yield Point.new(i,j), cell
         pass
     
     def get(self,point):
