@@ -1,7 +1,8 @@
 import Point from point
+import Entity from entity
 
 class Level:
-    def __init__(self,ent_field=None,width=10,height=10):
+    def __init__(self,ent_field=None,width=20,height=20):
         """Create a new level, optionally with an initial field of entities to start with. Requires either a field or dimensions"""
         if ent_field is None:
             self.ent_field = []
@@ -38,6 +39,13 @@ class Level:
                 if ent in cell:
                     self.add(cell.delete(ent),to_point)
                     return
+
+    def entities(type=Entity):
+        """Get all entities from the field, optionally constrain to a certain type"""
+        for cell in self.cells():
+            for ent in cell:
+                if isinstance(ent, type):
+                    yield ent
 
     def destroy(self,point):
         """Destroys all entities at point"""
