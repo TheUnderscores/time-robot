@@ -1,16 +1,24 @@
 import sdl2
+import sdl2.ext
+import sys
 
 class Renderer():
     render_window = None
     render_context = None
+    spriteFactory = None
 
     def __init__(self, title, w, h, win_flags = 0, render_flags = 0):
         """Initializes the window and render context"""
-        self.render_window = sdl2.SDL_CreateWindow(title.encode(),
-            sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, w, h,
-            win_flags)
-        self.render_context = sdl2.SDL_CreateRenderer(self.render_window, -1,
-            render_flags)
+        self.render_window = sdl2.ext.Window(title, size=(w, h))
+        self.render_window.show()
+
+        if "-hardware" in sys.argv:
+            print("Using hardware acceleration")
+            self.render_context = sdl2.ext.Renderer(window)
+            self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=renderer)
+        else:
+            print("Using software rendering")
+            self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
 
     def render_board(self, board):
         """
@@ -33,8 +41,3 @@ class Renderer():
         Add text to global status text box.
         """
         pass
-
-    def __del__(self):
-        """Renderer object destructor"""
-        sdl2.SDL_DestroyRenderer(self.render_context)
-        sdl2.SDL_DestroyWindow(self.render_window)
