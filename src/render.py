@@ -26,7 +26,7 @@ class Renderer():
                                            size=32,
                                            color=sdl2.ext.Color(255, 255, 255))
 
-    def render_board(self, board):
+    def render_level(self, board):
         """
         A 2D board of symbols to render,
         indexed Y first, ala board[y][x]
