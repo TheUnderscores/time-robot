@@ -4,7 +4,7 @@ class Renderer():
     render_window = None
     render_context = None
 
-    def __init__(self, title, w, h, win_flags, render_flags):
+    def __init__(self, title, w, h, win_flags = 0, render_flags = 0):
         """Initializes the window and render context"""
         self.render_window = sdl2.SDL_CreateWindow(title.encode(),
             sdl2.WINDOW_POS_CENTERED, sdl2.WINDOW_POS_CENTERED, w, h, win_flags)
