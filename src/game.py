@@ -117,8 +117,8 @@ class Game:
         for pos,rob in new_state.entities_pos(Robot):
             new_state.remove(rob,pos)
             print("length of timeline", len(self.timeline))#DEBUG
-        for robot in self.timeline.states[-1].entities(Robot):
-            action,amount = robot.run(len(self.timeline)-1)
+        for pos,robot in self.timeline.states[-1].entities_pos(Robot):
+            action,amount = robot.run(len(self.timeline)-1,new_state,copy.deepcopy(old_state),pos)
             if action in directions_to_additions.keys():
                 direction = directions_to_additions[action]
                 new_pos = robot.position(old_state) + Point(*direction)
