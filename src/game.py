@@ -102,11 +102,11 @@ class Game:
                         pass #TODO: Warn user
                     elif:
                         if potential_states[amount] is None:
-                            new_state = potential_states[amount] = deep_clone(timeline.states[amount])
+                            new_state = potential_states[amount] = copy.deep_copy(timeline.states[amount])
                             for robot in new_state.entities(Robot):
                                 robot.master = False
                         new_state = potential_states[amount]
-                        dup_rob = clone.deep_clone(robot)
+                        dup_rob = copy.deep_copy(robot)
                         dup_rob.level = new_state
                         new_state.add(dup_rob,
                                       robot.position)
