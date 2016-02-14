@@ -6,6 +6,7 @@ import copy
 
 from classes import * #OH NO ITS THE END OF THE WORLD
 from switch import Switch
+from point import Point
 
 directions_to_additions = {
     'up':    (0,-1),
@@ -33,9 +34,18 @@ class Game:
         # Create quit button
         def onclick_quit(button, event):
             self.quitGame()
+        self.createButton(Point(10, 10), Point(150, 50),
+                          onclick_quit,
+                          "Quit", Point(50, 10),
+                          color=sdl2.ext.Color(255, 0, 0))
 
-        self.createButton(0, 0, 50, 50, onclick_quit, "Quit", color=sdl2.ext.Color(255, 0, 0))
-        
+        # Create button for running code
+        def onclick_runcode(button, event):
+            pass#TODO: run player code
+        self.createButton(Point(170, 10), Point(150, 50),
+                          onclick_runcode,
+                          "Run Code", Point(20, 10),
+                          color=sdl2.ext.Color(0, 255, 0))
 
     def quitGame(self):
         """
@@ -44,22 +54,34 @@ class Game:
         quitEvent = sdl2.SDL_Event(sdl2.SDL_QUIT)
         sdl2.SDL_PushEvent(quitEvent)
 
-    def createButton(self, x, y, w, h, onclick, text="", color=sdl2.ext.Color(0,0,0)):
+    def createButton(self, pos, size, onclick,
+                     text="", posText=Point(0, 0), color=sdl2.ext.Color(0,0,0)):
         """
         Creates a button that can be clicked by the mouse.
+        pos     -- position of button
+        posText -- position of text relative to position of button
         """
         newButton = self.uiFactory.from_color(sdl2.ext.CHECKBUTTON,
                                               color,
-                                              size=(w, h))
+                                              size=(size.x, size.y))
         newButton.click += onclick
+        newButton.position = (pos.x, pos.y)
         self.buttons.append(newButton)
-        self.buttons_text.append((x, y, text))
+        posText = pos + posText
+        self.buttons_text.append((posText.x, posText.y, text))
 
     def draw(self):
         """
         Draws game elements.
         """
-        self.renderer.render_level(test_level.starting_level)#TODO: get board
+        winSize = self.renderer.render_window.size
+        self.renderer.render_context.fill((0, 0, winSize[0], winSize[1]),
+                                          color=sdl2.ext.Color(0, 0, 0))
+        self.renderer.render_context.fill((0, 70, winSize[0], 10),
+                                          color=sdl2.ext.Color(255, 255, 255))
+        self.renderer.render_level(test_level.starting_level,
+                                   Point(0, 90),
+                                   Point(winSize[0], winSize[1]-90))
         self.renderer.spriteRenderer.render(self.buttons)
         for posAndText in self.buttons_text:
             self.renderer.draw_text(*posAndText)
@@ -77,6 +99,7 @@ class Game:
         starting_level.add(robot,Point(6,6))
         timeline = Timeline(starting_level)
         running = True
+        foo = 0 #DEBUG
         while running:
             events = sdl2.ext.get_events()
             for e in events:

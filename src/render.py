@@ -34,23 +34,23 @@ class Renderer():
                                            size=32,
                                            color=sdl2.ext.Color(255, 255, 255))
 
-    def render_level(self, level):
+    def render_level(self, level, pos, size):
         """
         A 2D level of symbols to render,
-        indexed Y first, ala level[y][x]
+        indexed Y first, ala level[y][x].
+        pos and size are Point objects.
         """
-        winSize = Point(*self.render_window.size)
         lvlSize = Point(level.width, level.height)
-        scale = winSize // lvlSize
+        scale = size // lvlSize
         blockSize = scale - (scale // 10)
         for point, stack in level.cells():
-            point = point * scale
+            point = (point * scale) + pos
             rect = (point.x, point.y, blockSize.x, blockSize.y)
 
             if not stack:
                 # Light gray
                 self.render_context.fill(rect,
-                                              color=sdl2.ext.Color(176, 176, 176))
+                                         color=sdl2.ext.Color(176, 176, 176))
             else:
                 ent = stack[len(stack)-1]
                 if isinstance(ent, Robot):
