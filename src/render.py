@@ -7,7 +7,8 @@ class Renderer():
     def __init__(self, title, w, h, win_flags = 0, render_flags = 0):
         """Initializes the window and render context"""
         self.render_window = sdl2.SDL_CreateWindow(title.encode(),
-            sdl2.WINDOW_POS_CENTERED, sdl2.WINDOW_POS_CENTERED, w, h, win_flags)
+            sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, w, h,
+            win_flags)
         self.render_context = sdl2.SDL_CreateRenderer(self.render_window, -1,
             render_flags)
 
@@ -36,4 +37,4 @@ class Renderer():
     def __del__(self):
         """Renderer object destructor"""
         sdl2.SDL_DestroyRenderer(self.render_context)
-        sdl2.SDL_DestoryWindow(self.render_window)
+        sdl2.SDL_DestroyWindow(self.render_window)
