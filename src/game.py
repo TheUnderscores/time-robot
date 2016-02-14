@@ -78,22 +78,20 @@ class Game:
         Draws game elements.
         """
         self.renderer.clearScreen()
-        if self.hasWon:
-            self.renderer.draw_text(150, 250, "Youre Winner!",
-                                    sdl2.ext.Color(255, 255, 255), 100)
-        elif self.hasLost:
-            self.renderer.draw_text(350, 250, ". . .",
-                                    sdl2.ext.Color(255, 255, 255), 100)
-        else:
-            winSize = self.renderer.render_window.size
-            self.renderer.render_context.fill((0, 70, winSize[0], 10),
-                                              color=sdl2.ext.Color(255, 255, 255))
-            self.renderer.render_level(self.level,
-                                       Point(0, 90),
-                                       Point(winSize[0], winSize[1]-90))
+        winSize = self.renderer.render_window.size
+        self.renderer.render_context.fill((0, 70, winSize[0], 10),
+                                          color=sdl2.ext.Color(255, 255, 255))
+        self.renderer.render_level(self.level,
+                                   Point(0, 90),
+                                   Point(winSize[0], winSize[1]-90))
         self.renderer.spriteRenderer.render(self.buttons)
         for posAndText in self.buttons_text:
             self.renderer.draw_text(*posAndText)
+
+        if self.hasWon:
+            self.renderer.draw_textWithOutline(150, 250, "Youre Winner!", size=100)
+        elif self.hasLost:
+            self.renderer.draw_textWithOutline(350, 250, ". . .", size=100)
 
     def startGame(self, level_file, code_file):
         """

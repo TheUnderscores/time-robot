@@ -50,28 +50,34 @@ class Renderer():
             point = (point * scale) + pos
             rect = (point.x, point.y, blockSize.x, blockSize.y)
 
-            if not stack:
-                # Light gray
-                self.render_context.fill(rect,
-                                         color=sdl2.ext.Color(176, 176, 176))
-            else:
-                ent = stack[len(stack)-1]
-                if isinstance(ent, Robot):
+            # Light gray
+            self.render_context.fill(rect,
+                                     color=sdl2.ext.Color(176, 176, 176))
+            if stack:
+                hasRobot = False
+                for ent in stack:
+                    if isinstance(ent, Robot):
+                        hasRobot = True
+                    elif isinstance(ent, Button):
+                        # Red... (dark pink)
+                        self.render_context.fill(rect,
+                                                 color=sdl2.ext.Color(255, 0, 0))
+                    elif isinstance(ent, ExitDoor):
+                        # Orange
+                        self.render_context.fill(rect,
+                                                 color=sdl2.ext.Color(255, 140, 0))
+                    elif isinstance(ent, Wall):
+                        # Dark grey
+                        self.render_context.fill(rect,
+                                                 color=sdl2.ext.Color(50, 50, 50))
+                if hasRobot:
                     # Green
-                    self.render_context.fill(rect,
-                                             color=sdl2.ext.Color(0, 255, 0))
-                elif isinstance(ent, Button):
-                    # Red... (dark pink)
-                    self.render_context.fill(rect,
-                                             color=sdl2.ext.Color(255, 0, 0))
-                elif isinstance(ent, ExitDoor):
-                    # Orange
-                    self.render_context.fill(rect,
-                                             color=sdl2.ext.Color(255, 140, 0))
-                elif isinstance(ent, Wall):
-                    # Dark grey
-                    self.render_context.fill(rect,
-                                             color=sdl2.ext.Color(50, 50, 50))
+                    pRect = (rect[0]+rect[2]*1//8,
+                             rect[1]+rect[3]*1//8,
+                             rect[2]*3//4,
+                             rect[3]*3//4)
+                    self.render_context.fill(pRect,
+                                             color=sdl2.ext.Color(0, 200, 0))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0), size=32):
         """
@@ -83,15 +89,20 @@ class Renderer():
                                                   color=color)
         textSprite.position = (x, y)
         self.spriteRenderer.render(textSprite)
-
-    def draw_text_box(self, x, y, w, h, text):
+        
+    def draw_textWithOutline(self, x, y, text,
+                             color=sdl2.ext.Color(255,255,255),
+                             outcolor=sdl2.ext.Color(0,0,0),
+                             size=32):
         """
-        Creates a text box to provide player information in text form.
-        Caller is responsible for making sure that the provided text
-        is small enough to fit within the text box (less that `w` x `h`
-        characters)
+        Draws text to the screen with an outline.
         """
-        pass
+        shift = size * 1//16
+        self.draw_text(x+shift, y+shift, text, color=outcolor, size=size)
+        self.draw_text(x-shift, y+shift, text, color=outcolor, size=size)
+        self.draw_text(x-shift, y-shift, text, color=outcolor, size=size)
+        self.draw_text(x+shift, y-shift, text, color=outcolor, size=size)
+        self.draw_text(x, y, text, color=color, size=size)
 
     def add_status_text(self, text):
         """
