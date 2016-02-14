@@ -19,6 +19,7 @@ class Robot(Entity):
         self.code_string = code_string
         self.state = {}
         self.master = True
+        self.age = 0
 
     def run(self,step_number,new_level,old_level,position):
         """
@@ -58,5 +59,7 @@ class Robot(Entity):
         gov = namespace.get('governor',{})
         action = gov.get('action',None)
         amount = gov.get('time_tick',None)
+
+        self.age += 1
 
         return action,amount
