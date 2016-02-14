@@ -34,6 +34,14 @@ class Renderer():
                                            size=32,
                                            color=sdl2.ext.Color(255, 255, 255))
 
+    def clearScreen(self, bgcolor=sdl2.ext.Color(0, 0, 0)):
+        """
+        Color's entire screen in one color (black by default).
+        """
+        winSize = self.render_window.size
+        self.render_context.fill((0, 0, winSize[0], winSize[1]),
+                                 color=bgcolor)
+
     def render_level(self, level, pos, size):
         """
         A 2D level of symbols to render,
