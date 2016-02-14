@@ -104,11 +104,5 @@ class Renderer():
         self.draw_text(x+shift, y-shift, text, color=outcolor, size=size)
         self.draw_text(x, y, text, color=color, size=size)
 
-    def add_status_text(self, text):
-        """
-        Add text to global status text box.
-        """
-        pass
-
     def __del__(self):
         self.fontManager.close()
