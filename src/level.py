@@ -34,8 +34,10 @@ class Level:
         """Adds an entity to the field at position point"""
         if ent is None:
             raise Exception("ent can't be None you dummy")
-        print(point.x,point.y)
+        print("adding entity at",point.x,point.y) #debug
         self.ent_field[point.y][point.x].append(ent)
+        if len(self.get(point)) > 10: #DEBUG
+            raise Exception("AAH TOO MANY ROBOTS") #DEBUG
 
     def move(self, ent, to_point):
         """Moves an entity from wherever it is to to_point"""
