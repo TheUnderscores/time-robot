@@ -1,12 +1,12 @@
 from entity import Entity
 
 class Button(Entity):
-    def __init__(self):
-        super().__init__()
-        self.pressed = false
+    def __init__(self, level):
+        super().__init__(level)
+        self.pressed = False
 
     def press(self):
-        self.pressed = true
+        self.pressed = True
 
     def depress(self):
-        self.pressed = false
+        self.pressed = False
