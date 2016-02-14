@@ -1,13 +1,14 @@
 import render
 import sdl2
 import sdl2.ext
+import time
 
 class Game:
     renderer = None
     uiFactory = None
     uiProcessor = None
-    spriteRenderer = None#TODO: move to render.Renderer
     buttons = []
+    buttons_text = []
 
     def __init__(self):
         """
@@ -16,7 +17,6 @@ class Game:
         self.renderer = render.Renderer("Time Robot", 800, 600)#TODO: window and render flags
         self.uiFactory = sdl2.ext.UIFactory(self.renderer.spriteFactory)
         self.uiProcessor = sdl2.ext.UIProcessor()
-        self.spriteRenderer = self.renderer.spriteFactory.create_sprite_render_system(self.renderer.render_window)
 
         # Create quit button
         def onclick_quit(button, event):
@@ -41,6 +41,16 @@ class Game:
                                               size=(w, h))
         newButton.click += onclick
         self.buttons.append(newButton)
+        self.buttons_text.append((x, y, text))
+
+    def draw(self):
+        """
+        Draws game elements.
+        """
+        self.renderer.render_board(None)#TODO: get board
+        self.renderer.spriteRenderer.render(self.buttons)
+        for posAndText in self.buttons_text:
+            self.renderer.draw_text(*posAndText)
 
     def startGame(self):
         """
@@ -55,5 +65,4 @@ class Game:
                     running = False
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
-            self.renderer.render_board(None)#TODO: get board
-            self.spriteRenderer.render(self.buttons)
+            self.draw()
