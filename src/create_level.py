@@ -23,7 +23,7 @@ def create_level(split_level):
                 if split_level[y][x] == 'B':
                     level.add(Button(level), point)
                 if split_level[y][x] == 'W':
-                    pass
+                    level.add(Wall(level), point)
                 if split_level[y][x] == 'R':
                     level.add(Robot(level), point)
     return level
