@@ -18,11 +18,10 @@ class Robot(Entity):
         super().__init__(level)
         self.code_string = code_string
         self.state = {}
-        self.level = level
         self.master = True
         self.age = 0
 
-    def run(self,step_number):
+    def run(self,step_number,new_level,old_level,position):
         """
         Run this robot's code, return the action and amount
         in that order
@@ -33,8 +32,8 @@ class Robot(Entity):
                 'time_tick': None
             },
             'step': step_number,
-            'position': self.position(self.level),
-            'level': self.level,
+            'position': position,
+            'level': old_level,
             'state': self.state,
             'move_up': robot_funcs.move_up, #TODO: dont do this manually
             'move_down': robot_funcs.move_down,
@@ -54,6 +53,8 @@ class Robot(Entity):
         #*drumroll*
         exec(self.code_string,namespace) #NOT secure, can still access os
         #Tah-dah!
+
+        self.state = namespace.get('state',{})
         
         gov = namespace.get('governor',{})
         action = gov.get('action',None)
