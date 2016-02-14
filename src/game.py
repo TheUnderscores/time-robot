@@ -131,7 +131,6 @@ class Game:
         new_state = copy.deepcopy(old_state)
         for pos,rob in new_state.entities_pos(Robot):
             new_state.remove(rob,pos)
-            print("length of timeline", len(self.timeline))#DEBUG
         for robot in self.timeline.states[-1].entities(Robot):
             action,amount = robot.run(len(self.timeline)-1)
             if action in directions_to_additions.keys():
@@ -163,7 +162,6 @@ class Game:
                 print("Your program sucks user")
                 #the robot does nothing
 
-        print("END OF FOR")#DEBUG
         print("master_state_i", master_state_i)
         if master_state_i is not None:                
             master_state = potential_states[master_state_i]
@@ -189,7 +187,6 @@ class Game:
                     master_on_exit = True                     
                     break
             if master_on_exit: #YOU WIN
-                print("YOU'RE WINNER!")
                 return "win"
                     
         for pos,cell in new_state.cells():
@@ -210,6 +207,4 @@ class Game:
                 else:
                     print("Your robots have exploded")
         self.level = new_state
-        for pos,robot in new_state.entities_pos(Robot):
-            print("a robot position: {},{}".format(pos.x,pos.y)) #DEBUG
         return "continue"
