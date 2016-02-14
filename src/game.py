@@ -94,7 +94,7 @@ class Game:
         with open(code_file, 'r') as f:
             code_string = f.read()
         self.level = create_level.setup_level(level_file, code_string)
-        timeline = Timeline(self.level)
+        self.timeline = Timeline(self.level)
         self.draw()
         running = True
         while running:
@@ -105,85 +105,87 @@ class Game:
                     running = False
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
-            master_state_i = None
-            potential_states = [None] * len(timeline)
-            old_state = timeline.states[-1]
-            new_state = copy.deepcopy(old_state)
-            for pos,rob in new_state.entities_pos(Robot):
-                new_state.remove(rob,pos)
-            print(len(timeline))#DEBUG
-            for robot in timeline.states[-1].entities(Robot):
-                action,amount = robot.run(len(timeline)-1)
-                if action in directions_to_additions.keys():
-                    direction = directions_to_additions[action]
-                    new_pos = robot.position(old_state) + Point(*direction)
-                    new_robot = copy.deepcopy(robot)
-                    #new_robot.__level = new_state
-                    new_state.add(new_robot,new_pos)
-                    if amount is not None:
-                        print("WARN: Was told to move, but amount is also set. Possible bug")
-                elif action == 'time':
-                    if amount >= len(timeline): #invalid
-                        print("tried to travel to the future(just wait)")
-                    else:
-                        if potential_states[amount] is None:
-                            new_state = potential_states[amount] = copy.deepcopy(timeline.states[amount])
-                            for flbrobot in new_state.entities(Robot):
-                                flbrobot.master = False
+            running &= self.harryPotter()
+            time.sleep(1)
+            self.draw()
+
+    def harryPotter(self):
+        master_state_i = None
+        potential_states = [None] * len(self.timeline)
+        old_state = self.timeline.states[-1]
+        new_state = copy.deepcopy(old_state)
+        for pos,rob in new_state.entities_pos(Robot):
+            new_state.remove(rob,pos)
+            print("length of timeline", len(self.timeline))#DEBUG
+        for robot in self.timeline.states[-1].entities(Robot):
+            action,amount = robot.run(len(self.timeline)-1)
+            if action in directions_to_additions.keys():
+                direction = directions_to_additions[action]
+                new_pos = robot.position(old_state) + Point(*direction)
+                new_robot = copy.deepcopy(robot)
+                #new_robot.__level = new_state
+                new_state.add(new_robot,new_pos)
+                if amount is not None:
+                    print("WARN: Was told to move, but amount is also set. Possible bug")
+            elif action == 'time':
+                if amount >= len(self.timeline): #invalid
+                    print("tried to travel to the future(just wait)")
+                else:
+                    if potential_states[amount] is None:
+                        new_state = potential_states[amount] = copy.deepcopy(self.timeline.states[amount])
+                        for flbrobot in new_state.entities(Robot):
+                            flbrobot.master = False
                         new_state = potential_states[amount]
                         dup_rob = copy.deepcopy(robot)
                         new_state.add(dup_rob,
                                       robot.position(old_state))
-                        if robot.master:
-                            master_state_i = amount
-                elif action == 'none':
-                    new_robot = copy.deepcopy(robot)
-                    new_state.add(new_robot,robot.position(old_state))
-                else:
-                    print("Your program sucks user")
-                    #the robot does nothing
-
-            print("END OF FOR")#DEBUG
-            print("master_state_i", master_state_i)
-            if master_state_i is not None:                
-                master_state = potential_states[master_state_i]
-                #The master robot has traveled back in time
-                if master_state_i > 0: 
-                    timeline = timeline.previous_state(master_state-1)
-                    timeline.add_state(master_state)
-                else:
-                    #Back to the beginning
-                    timeline = Timeline(master_state)
+                    if robot.master:
+                        master_state_i = amount
+            elif action == 'none':
+                new_robot = copy.deepcopy(robot)
+                new_state.add(new_robot,robot.position(old_state))
             else:
-                #No time travel
-                timeline.add_state(new_state)
-            new_state = timeline.states[-1]
+                print("Your program sucks user")
+                #the robot does nothing
+
+        print("END OF FOR")#DEBUG
+        print("master_state_i", master_state_i)
+        if master_state_i is not None:                
+            master_state = potential_states[master_state_i]
+            #The master robot has traveled back in time
+            if master_state_i > 0: 
+                self.timeline = self.timeline.previous_state(master_state-1)
+                self.timeline.add_state(master_state)
+            else:
+                #Back to the beginning
+                self.timeline = Timeline(master_state)
+        else:
+            #No time travel
+            self.timeline.add_state(new_state)
+            new_state = self.timeline.states[-1]
             #^sets new state again in case time travel happenend
-            all_buttons_pressed = True
-            for pos,ent in new_state.entities_pos(Button):
-                all_buttons_pressed &= new_state.spot_has(pos,Robot)
-            if all_buttons_pressed: #Oh man!
-                master_on_exit = False
-                for pos,ent in new_state.entities_pos(ExitDoor):
-                    if new_state.spot_has(pos,Robot):
-                        master_on_exit = True                     
-                        print("BLARG")
-                        break
-                if master_on_exit: #YOU WIN
-                    print("YOU'RE WINNER!")
-                    running = False
-            
-            for pos,cell in new_state.cells():
-                count_robots = 0
-                for ent in cell:
-                    if isinstance(ent,Robot):
-                        count_robots += 1
-                if count_robots > 1:
-                    new_state.destroy(pos)
-                    #TODO: tell user that their robots have exploded
-            self.level = new_state
-            for pos,robot in new_state.entities_pos(Robot):
-                print("{},{}".format(pos.x,pos.y))
-            
-            time.sleep(1)
-            self.draw()
+        all_buttons_pressed = True
+        for pos,ent in new_state.entities_pos(Button):
+            all_buttons_pressed &= new_state.spot_has(pos,Robot)
+        if all_buttons_pressed: #Oh man!
+            master_on_exit = False
+            for pos,ent in new_state.entities_pos(ExitDoor):
+                if new_state.spot_has(pos,Robot):
+                    master_on_exit = True                     
+                    break
+            if master_on_exit: #YOU WIN
+                print("YOU'RE WINNER!")
+                return False
+                    
+        for pos,cell in new_state.cells():
+            count_robots = 0
+            for ent in cell:
+                if isinstance(ent,Robot):
+                    count_robots += 1
+            if count_robots > 1:
+                new_state.destroy(pos)
+                print("Your robots have exploded")
+        self.level = new_state
+        for pos,robot in new_state.entities_pos(Robot):
+            print("a robot position: {},{}".format(pos.x,pos.y)) #DEBUG
+        return True
