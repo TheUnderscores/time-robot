@@ -20,9 +20,7 @@ class Game:
 
         # Create quit button
         def onclick_quit(button, event):
-            print("HERE")
             self.quitGame()
-            print("LOL")
 
         self.createButton(0, 0, 50, 50, onclick_quit, "Quit", color=sdl2.ext.Color(255, 0, 0))
         
@@ -53,7 +51,7 @@ class Game:
             events = sdl2.ext.get_events()
             for e in events:
                 if e.type == sdl2.SDL_QUIT:
-                    print("QUIT")
+                    print("Exiting game...")
                     running = False
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
