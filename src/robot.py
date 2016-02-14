@@ -1,7 +1,6 @@
 from entity import Entity
-from freeze import Freeze
-import clone
-import robot-funs
+from frozen import Frozen
+import robot_funcs
 
 class Robot(Entity):
     def __init__(self,level,code_string):
@@ -26,13 +25,13 @@ class Robot(Entity):
             'governor':{
                 'action': None,
                 'time_tick': None
-            }
-            'position': Freeze(self.position()),
-            'level': Freeze(self.level),
+            },
+            'position': Frozen(self.position()),
+            'level': Frozen(self.level),
             'state': self.state
         }
 
-        namespace.update(robot-funs) #add helper funcs to namespace
+        namespace.update(robot_funcs) #add helper funcs to namespace
         
         #*drumroll*
         eval(codestring,namespace) #NOT secure, can still access os

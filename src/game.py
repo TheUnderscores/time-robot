@@ -100,7 +100,7 @@ class Game:
                 elif action == 'time':
                     if amount >= len(timeline): #invalid
                         pass #TODO: Warn user
-                    elif:
+                    else:
                         if potential_states[amount] is None:
                             new_state = potential_states[amount] = copy.deep_copy(timeline.states[amount])
                             for robot in new_state.entities(Robot):
