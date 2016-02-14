@@ -26,7 +26,7 @@ class Level:
         """Returns a LIST (not a single) of entities at the given point"""
         return self.ent_field[self.y][self.x]
 
-    def empty(self,point):
+    def is_empty(self,point):
         """Returns true if there is nothing at point"""
         return not self.get(point)
 
@@ -42,13 +42,27 @@ class Level:
                     self.add(cell.delete(ent),to_point)
                     return
 
-    def entities(type=Entity):
+    def entities(typ=Entity):
         """Get all entities from the field, optionally constrain to a certain type"""
-        for cell in self.cells():
+        for pos, ent in self.enities_pos(typ):
+            yield ent
+
+    def entities_pos(typ=Entity):
+        """
+        Get all the entities and their position
+        """
+        for pos,cell in self.cells():
             for ent in cell:
-                if isinstance(ent, type):
-                    yield ent
-                    
+                if isinstance(ent, typ):
+                    yield pos,ent
+    
     def destroy(self,point):
         """Destroys all entities at point"""
         self.ent_field[self.y][self.x] = []
+
+    def spot_has(self,point,typ):
+        """Test if there is an entity of typ at point"""
+        for ent in self.get(point):
+            if isinstance(ent,typ):
+                return True
+        return False
