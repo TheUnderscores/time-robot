@@ -1,1 +1,1 @@
-python3 src/main.py followLeader.{trl,py}
+python3 src/main.py levels/followLeader.{trl,py}

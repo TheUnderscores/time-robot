@@ -1,1 +1,1 @@
-python3 src/main.py demo_1.{trl,py}
+python3 src/main.py levels/demo_1.{trl,py}
