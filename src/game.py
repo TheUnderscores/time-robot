@@ -91,7 +91,8 @@ class Game:
         if self.hasWon:
             self.renderer.draw_textWithOutline(150, 250, "Youre Winner!", size=100)
         elif self.hasLost:
-            self.renderer.draw_textWithOutline(350, 250, ". . .", size=100)
+            self.renderer.draw_textWithOutline(70, 225, "Youre a Disgrace", size=100)
+            self.renderer.draw_textWithOutline(120, 325, "to Your Family", size=100)
 
     def startGame(self, level_file, code_file):
         """
