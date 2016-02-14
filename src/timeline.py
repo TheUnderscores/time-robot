@@ -4,7 +4,7 @@ class Timeline:
         self.states = [init_level]
 
     def __len__(self): #PYTHON IS DUMB
-        len(self.states)
+        return len(self.states)
 
     def previous_state(self,how_far_back):
         """Goes to a "previous state" so to speak of the timeline.

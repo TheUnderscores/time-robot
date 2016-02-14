@@ -24,7 +24,7 @@ class Level:
     
     def get(self,point):
         """Returns a LIST (not a single) of entities at the given point"""
-        return self.ent_field[self.y][self.x]
+        return self.ent_field[point.y][point.x]
 
     def is_empty(self,point):
         """Returns true if there is nothing at point"""
@@ -32,22 +32,29 @@ class Level:
 
     def add(self,ent,point):
         """Adds an entity to the field at position point"""
+        if ent is None:
+            raise Exception("ent can't be None you dummy")
+        print(point.x,point.y)
         self.ent_field[point.y][point.x].append(ent)
 
     def move(self, ent, to_point):
         """Moves an entity from wherever it is to to_point"""
         for point, cell in self.cells():
-            for i, ent in enumerate(cell):
-                if ent in cell:
-                    self.add(cell.delete(ent),to_point)
-                    return
+            if ent in cell:
+                cell.remove(ent)
+                self.add(ent,to_point)
+                return
+
+    def remove(self,ent,point):
+        """Delete ent from point"""
+        self.get(point).remove(ent)
 
     def entities(self, typ=Entity):
         """Get all entities from the field, optionally constrain to a certain type"""
-        for pos, ent in self.enities_pos(typ):
+        for pos, ent in self.entities_pos(typ):
             yield ent
 
-    def entities_pos(typ=Entity):
+    def entities_pos(self, typ=Entity):
         """
         Get all the entities and their position
         """
@@ -58,7 +65,7 @@ class Level:
 
     def destroy(self,point):
         """Destroys all entities at point"""
-        self.ent_field[self.y][self.x] = []
+        self.ent_field[point.y][point.x] = []
 
     def spot_has(self,point,typ):
         """Test if there is an entity of typ at point"""
@@ -66,3 +73,13 @@ class Level:
             if isinstance(ent,typ):
                 return True
         return False
+
+    def move_at(self,typ,fpoint,tpoint):
+        """Moves an entity of typ from fpoint to tpoint"""
+        cell = self.get(fpoint)
+        filtered = []
+        for ent in cell:
+            if isinstance(ent,typ):
+                filtered.append(cell)
+        if len(filtered) > 1:
+            raise Exception("Trying to move more than one robot")

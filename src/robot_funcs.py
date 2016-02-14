@@ -1,16 +1,16 @@
-def move_up(robot):
+def move_up():
         global governor
-        governor.action = 'up'
+        governor['action'] = 'up'
 
-def move_down(robot):
+def move_down():
         global governor
-        governor.action = 'down'
+        governor['action'] = 'down'
 
-def move_left(robot):
+def move_left():
         global governor
         governor.action = 'left'
 
-def move_right(robot):
+def move_right():
         global governor
         governor.action = 'right'
 

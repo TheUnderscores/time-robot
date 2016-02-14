@@ -1,5 +1,11 @@
 from entity import Entity
 from frozen import Frozen
+from point import Point
+from exitdoor import ExitDoor
+from wall import Wall
+from level import Level
+from button import Button
+#from classes import Point, ExitDoor, Button, Wall, Level
 import robot_funcs
 
 class Robot(Entity):
@@ -27,17 +33,35 @@ class Robot(Entity):
                 'time_tick': None
             },
             'step': step_number,
-            'position': Frozen(self.position()),
-            'level': Frozen(self.level),
-            'state': self.state
+            'position': self.position(self.level),
+            'level': self.level,
+            'state': self.state,
+            'move_up': robot_funcs.move_up, #TODO: dont do this manually
+            'move_down': robot_funcs.move_down,
+            'move_left': robot_funcs.move_left,
+            'move_right':robot_funcs.move_right,
+            'reverse_time': robot_funcs.reverse_time,
+            'set_time': robot_funcs.set_time,
+            'Point': Point,
+            'Entity': Entity,
+            'ExitDoor': ExitDoor,
+            'Button': Button,
+            'Robot': Robot,
+            'Wall': Wall,
+            'Level': Level,            
         }
 
-        namespace.update(robot_funcs) #add helper funcs to namespace
+        #to_add = {}
+        #for n in dir(robot_funcs):
+        #    to_add[n] = robot_funcs[n]
+        #namespace.update(to_add) #add helper funcs to namespace
         
         #*drumroll*
-        eval(codestring,namespace) #NOT secure, can still access os
+        exec(self.code_string,namespace) #NOT secure, can still access os
         #Tah-dah!
 
+        print(str(namespace['governor']))
+        
         gov = namespace.get('governor',{})
         action = gov.get('action',None)
         amount = gov.get('time_tick',None)

@@ -1,0 +1,77 @@
+import render
+import sdl2
+import sdl2.ext
+import time
+
+class Game:
+    renderer = None
+    uiFactory = None
+    uiProcessor = None
+    buttons = []
+    buttons_text = []
+    running = False
+
+    def __init__(self):
+        """
+        Initializes the game.
+        """
+        self.renderer = render.Renderer("Time Robot", 800, 600)#TODO: window and render flags
+        self.uiFactory = sdl2.ext.UIFactory(self.renderer.spriteFactory)
+        self.uiProcessor = sdl2.ext.UIProcessor()
+
+        # Create quit button
+        def onclick_quit(button, event):
+            self.quitGame()
+
+        self.createButton(0, 0, 50, 50, onclick_quit, "Quit", color=sdl2.ext.Color(255, 0, 0))
+        
+
+    def quitGame(self):
+        """
+        Halts game loop.
+        """
+        quitEvent = sdl2.SDL_Event(sdl2.SDL_QUIT)
+        sdl2.SDL_PushEvent(quitEvent)
+
+    def createButton(self, x, y, w, h, onclick, text="", color=sdl2.ext.Color(0,0,0)):
+        """
+        Creates a button that can be clicked by the mouse.
+        """
+        newButton = self.uiFactory.from_color(sdl2.ext.CHECKBUTTON,
+                                              color,
+                                              size=(w, h))
+        newButton.click += onclick
+        self.buttons.append(newButton)
+        self.buttons_text.append((x, y, text))
+
+    def draw(self):
+        """
+        Draws game elements.
+        """
+        self.renderer.render_board(None)#TODO: get board
+        self.renderer.spriteRenderer.render(self.buttons)
+        for posAndText in self.buttons_text:
+            self.renderer.draw_text(*posAndText)
+
+    def checkEvents(self):
+        """
+        Checks for SDL events and adjusts game accordingly.
+        """
+        events = sdl2.ext.get_events()
+        for e in events:
+            if e.type == sdl2.SDL_QUIT:
+                print("Exiting game...")
+                self.running = False
+                break
+            self.uiProcessor.dispatch(self.buttons, e)
+
+    def startGame(self):
+        """
+        Initiates the main game loop.
+        """
+        self.running = True
+        self.draw()
+        while self.running:
+            self.checkEvents()
+
+            

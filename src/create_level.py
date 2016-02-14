@@ -12,7 +12,7 @@ def read_level(level_file):
                 level.append(line[:-1])
     return level
 
-def create_level(split_level):
+def create_level(split_level, code_string):
     level = Level(ent_field=None, width=len(split_level[0]), height=len(split_level))
     for y in range(len(split_level)):
         for x in range(len(split_level[y])):
@@ -25,8 +25,8 @@ def create_level(split_level):
                 if split_level[y][x] == 'W':
                     level.add(Wall(level), point)
                 if split_level[y][x] == 'R':
-                    level.add(Robot(level), point)
+                    level.add(Robot(level, code_string), point)
     return level
 
-def setup_level(level_file):
-    return create_level(read_level(level_file))
+def setup_level(level_file, code_string):
+    return create_level(read_level(level_file), code_string)

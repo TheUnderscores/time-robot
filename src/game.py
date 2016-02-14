@@ -91,11 +91,11 @@ class Game:
         """
         Initiates the main game loop.
         """
-        self.level = create_level.setup_level(level_file)
         with open(code_file, 'r') as f:
             code_string = f.read()
-        robot = Robot(self.level, code_string)
-        timeline = Timeline(level)
+        self.level = create_level.setup_level(level_file, code_string)
+        timeline = Timeline(self.level)
+        self.draw()
         running = True
         while running:
             events = sdl2.ext.get_events()
@@ -106,38 +106,45 @@ class Game:
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
             master_state_i = None
-            potential_states = [None for i in range(len(timeline))]
-            new_state = copy.deepcopy(timeline.states[-1])
-            for robot in new_state.entities(Robot):
-                action,amount = robot.run(new_state,
-                                          timeline.states.length-1)
+            potential_states = [None] * len(timeline)
+            old_state = timeline.states[-1]
+            new_state = copy.deepcopy(old_state)
+            for pos,rob in new_state.entities_pos(Robot):
+                new_state.remove(rob,pos)
+            print(len(timeline))#DEBUG
+            for robot in timeline.states[-1].entities(Robot):
+                action,amount = robot.run(len(timeline)-1)
                 if action in directions_to_additions.keys():
                     direction = directions_to_additions[action]
-                    new_pos = robot.position + direction
-                    new_state.move(robot,new_pos)
+                    new_pos = robot.position(old_state) + Point(*direction)
+                    new_robot = copy.deepcopy(robot)
+                    #new_robot.__level = new_state
+                    new_state.add(new_robot,new_pos)
                     if amount is not None:
-                        pass #TODO: warn the user about this    
+                        print("WARN: Was told to move, but amount is also set. Possible bug")
                 elif action == 'time':
                     if amount >= len(timeline): #invalid
-                        pass #TODO: Warn user
+                        print("tried to travel to the future(just wait)")
                     else:
                         if potential_states[amount] is None:
-                            new_state = potential_states[amount] = deep_clone(timeline.states[amount])
-                            for robot in new_state.entities(Robot):
-                                robot.master = False
+                            new_state = potential_states[amount] = copy.deepcopy(timeline.states[amount])
+                            for flbrobot in new_state.entities(Robot):
+                                flbrobot.master = False
                         new_state = potential_states[amount]
-                        dup_rob = clone.deep_clone(robot)
-                        dup_rob.level = new_state
+                        dup_rob = copy.deepcopy(robot)
                         new_state.add(dup_rob,
-                                      robot.position)
+                                      robot.position(old_state))
                         if robot.master:
                             master_state_i = amount
                 elif action == 'none':
-                    pass #explicitly stay in the same spot    
+                    new_robot = copy.deepcopy(robot)
+                    new_state.add(new_robot,robot.position(old_state))
                 else:
-                    pass
-                    #Tell the user their program sucks;
+                    print("Your program sucks user")
                     #the robot does nothing
+
+            print("END OF FOR")#DEBUG
+            print("master_state_i", master_state_i)
             if master_state_i is not None:                
                 master_state = potential_states[master_state_i]
                 #The master robot has traveled back in time
@@ -159,7 +166,8 @@ class Game:
                 master_on_exit = False
                 for pos,ent in new_state.entities_pos(ExitDoor):
                     if new_state.spot_has(pos,Robot):
-                        master_on_exit = True
+                        master_on_exit = True                     
+                        print("BLARG")
                         break
                 if master_on_exit: #YOU WIN
                     print("YOU'RE WINNER!")
@@ -173,6 +181,9 @@ class Game:
                 if count_robots > 1:
                     new_state.destroy(pos)
                     #TODO: tell user that their robots have exploded
-                    pass
+            self.level = new_state
+            for pos,robot in new_state.entities_pos(Robot):
+                print("{},{}".format(pos.x,pos.y))
+            
             time.sleep(1)
             self.draw()
