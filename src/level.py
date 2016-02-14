@@ -1,5 +1,5 @@
-import Point from point
-import Entity from entity
+from point import Point
+from entity import Entity
 
 class Level:
     def __init__(self,ent_field=None,width=20,height=20):
@@ -20,7 +20,7 @@ class Level:
         """Iterate over each cell in the level, get a position and list of things in that cell"""
         for y,row in enumerate(self.ent_field):
             for x,cell in enumerate(row):
-                yield Point.new(x,y), cell
+                yield Point(x,y), cell
     
     def get(self,point):
         """Returns a LIST (not a single) of entities at the given point"""
@@ -32,7 +32,7 @@ class Level:
 
     def add(self,ent,point):
         """Adds an entity to the field at position point"""
-        self.ent_field[point.y][point.x]
+        self.ent_field[point.y][point.x].append(ent)
 
     def move(self, ent, to_point):
         """Moves an entity from wherever it is to to_point"""

@@ -14,20 +14,19 @@ class Renderer():
         self.render_window = sdl2.ext.Window(title, size=(w, h))
         self.render_window.show()
 
-        if "-hardware" in sys.argv:
-            print("Using hardware acceleration")
-            self.render_context = sdl2.ext.Renderer(window)
-            self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=renderer)
-        else:
-            print("Using software rendering")
-            self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+        self.render_context = sdl2.ext.Renderer(self.render_window)
+
+        self.render_context.draw_rect((0, 0, w, h), sdl2.ext.Color(0, 0, 0, 0))
+
+        self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE,
+            renderer=self.render_context)
 
         self.spriteRenderer = self.spriteFactory.create_sprite_render_system(self.render_window)
         self.fontManager = sdl2.ext.FontManager("lib/square-deal.ttf",
                                            size=32,
                                            color=sdl2.ext.Color(255, 255, 255))
 
-    def render_board(self, board):
+    def render_level(self, board):
         """
         A 2D board of symbols to render,
         indexed Y first, ala board[y][x]
