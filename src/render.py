@@ -5,6 +5,7 @@ import sys
 
 from level import Level
 from entity import Entity
+from point import Point
 from robot import Robot
 from button import Button
 from exitdoor import ExitDoor
@@ -38,58 +39,32 @@ class Renderer():
         A 2D level of symbols to render,
         indexed Y first, ala level[y][x]
         """
-        level_texture = sdl2.SDL_CreateTexture(self.render_context.renderer,
-            sdl2.SDL_PIXELFORMAT_RGB24, sdl2.SDL_TEXTUREACCESS_TARGET,
-            5 * level.width - 1, 5 * level.height - 1)
-
-        old_target = self.render_context.rendertarget
-
-        sdl2.SDL_SetRenderTarget(self.render_context.renderer, level_texture)
-
-        temp_rect = sdl2.SDL_Rect(x = 0, y = 0, w = 4, h = 4)
-
+        winSize = Point(*self.render_window.size)
+        lvlSize = Point(level.width, level.height)
+        scale = winSize / lvlSize
+        blockSize = scale - (scale * 1/10)
+        scale.castInt()
+        blockSize.castInt()
         for point, stack in level.cells():
+            point = point * scale
+            rect = (point.x, point.y, blockSize.x, blockSize.y)
+
             if not stack:
                 # Light gray
-                temp_color = sdl2.SDL_SetRenderDrawColor(
-                    self.render_context.renderer, ctypes.c_ubyte(0xb0),
-                    ctypes.c_ubyte(0xb0), ctypes.c_ubyte(0xb0), ctypes.c_ubyte(0))
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(176, 176, 176))
             elif isinstance(stack[0], Robot):
                 # Green
-                temp_color = sdl2.SDL_SetRenderDrawColor(
-                    self.render_context.renderer, ctypes.c_ubyte(0),
-                    ctypes.c_ubyte(0xff), ctypes.c_ubyte(0), ctypes.c_ubyte(0))
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(0, 255, 0))
             elif isinstance(stack[0], Button):
                 # Red... (dark pink)
-                temp_color = sdl2.SDL_SetRenderDrawColor(
-                    self.render_context.renderer, ctypes.c_ubyte(0xff),
-                    ctypes.c_ubyte(0), ctypes.c_ubyte(0), ctypes.c_ubyte(0))
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(255, 0, 0))
             elif isinstance(stack[0], ExitDoor):
                 # Orange
-                temp_color = sdl2.SDL_SetRenderDrawColor(
-                    self.render_context.renderer, ctypes.c_ubyte(0xff),
-                    ctypes.c_ubyte(0x8c), ctypes.c_ubyte(0), ctypes.c_ubyte(0))
-
-            temp_rect.x = point.x * 5;
-            temp_rect.y = point.y * 5;
-            sdl2.SDL_RenderDrawRect(self.render_context.renderer,
-                ctypes.byref(temp_rect))
-
-        sdl2.SDL_SetRenderTarget(self.render_context.renderer,
-            ctypes.byref(old_target))
-
-        temp_rect.x = 0; temp_rect.y = 0; temp_rect.w = 400; temp_rect.h = 400;
-
-        sdl2.SDL_RenderCopy(self.render_context.renderer,
-            ctypes.byref(level_texture), None, ctypes.byref(temp_rect))
-        """
-        textureSprite = self.spriteFactory.create_texture_sprite(
-            self.render_context, (5 * level.width - 1, 5 * level.height - 1),
-            pformat=sdl2.SDL_PIXELFORMAT_RGB24,
-            access=sdl2.SDL_TEXTUREACCESS_TARGET)
-        textureSprite.texture = level_texture
-        self.spriteRenderer.render(textureSprite)
-        """
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(255, 140, 0))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0)):
         """
