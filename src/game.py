@@ -86,7 +86,7 @@ class Game:
         for posAndText in self.buttons_text:
             self.renderer.draw_text(*posAndText)
 
-    def startGame(self):
+    def startGame(self, level_file, code_file):
         """
         Initiates the main game loop.
         """

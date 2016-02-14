@@ -7,7 +7,7 @@ def read_level(level_file):
         with open(level_file, 'r') as f:
             for line in f:
                 line = line.replace('\r', '')
-                if line == '\n'
+                if line == '\n':
                     break
                 level.append(line[:-1])
     return level
@@ -23,7 +23,7 @@ def create_level(split_level):
                 if split_level[y][x] == 'B':
                     level.add(Button(level), point)
                 if split_level[y][x] == 'W':
-                    pass
+                    level.add(Wall(level), point)
                 if split_level[y][x] == 'R':
                     level.add(Robot(level), point)
     return level
