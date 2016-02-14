@@ -167,7 +167,7 @@ class Game:
                     self.hasWon = True
                 elif status == "lose":
                     self.hasLost = True
-            time.sleep(1)
+            time.sleep(0.5)
             self.draw()
 
     def updateEntities(self):
@@ -202,12 +202,13 @@ class Game:
                         new_state = potential_states[amount] = copy.deepcopy(self.timeline.states[amount])
                         for flbrobot in new_state.entities(Robot):
                             flbrobot.master = False
-                        new_state = potential_states[amount]
-                        dup_rob = copy.deepcopy(robot)
-                        new_state.add(dup_rob,
-                                      robot.position(old_state))
+                    new_state = potential_states[amount]
+                    dup_rob = copy.deepcopy(robot)
+                    new_state.add(dup_rob,
+                                  robot.position(old_state))
                     if robot.master:
                         master_state_i = amount
+                    print("Robot is traveling to {} and master is {}".format(amount, robot.master))
             elif action == 'none':
                 new_robot = copy.deepcopy(robot)
                 new_state.add(new_robot,robot.position(old_state))

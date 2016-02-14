@@ -3,7 +3,7 @@ for n in level.entities(Robot):
     total_robots += 1
 
 print("robot stuff",state.get('which',''), total_robots)
-    
+print("step", step)
 if step == 0 and total_robots == 1:
     state['which'] = 'NE'
     governor['action'] = 'none'
@@ -29,5 +29,8 @@ elif total_robots == 4 and 3 < step <= 8:
     governor['action'] = {'W': 'left', 'E': 'right'}[state['which'][1]]
     if step == 8:
         state['stay'] = True
-elif total_robots > 4 and (not state['stay']) and state['which'][0] == 'N':
+elif total_robots == 4 and step == 9:
+    governor['action'] = 'time'
+    governor['time_tick'] = 0    
+elif total_robots > 4 and (not state.get('stay',False)) and state['which'][0] == 'N':
     governor['action'] = 'up'
