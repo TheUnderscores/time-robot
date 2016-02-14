@@ -5,14 +5,6 @@ def render_board(board):
     """
     pass
 
-def create_button(x, y, w, h, text, on_click):
-    """
-    Creates an on screen button, at (X, Y) on the screen that is
-    `w` x `h`, containing the text `text`, and provided call-back
-    in `on_click`
-    """
-    pass
-
 def draw_text_box(x, y, w, h, text):
     """
     Creates a text box to provide player information in text form.
