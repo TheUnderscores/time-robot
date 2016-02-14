@@ -41,10 +41,8 @@ class Renderer():
         """
         winSize = Point(*self.render_window.size)
         lvlSize = Point(level.width, level.height)
-        scale = winSize / lvlSize
-        blockSize = scale - (scale * 1/10)
-        scale.castInt()
-        blockSize.castInt()
+        scale = winSize // lvlSize
+        blockSize = scale - (scale // 10)
         for point, stack in level.cells():
             point = point * scale
             rect = (point.x, point.y, blockSize.x, blockSize.y)
