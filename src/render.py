@@ -54,10 +54,10 @@ class Renderer():
             self.render_context.fill(rect,
                                      color=sdl2.ext.Color(176, 176, 176))
             if stack:
-                hasRobot = False
+                robot = False
                 for ent in stack:
                     if isinstance(ent, Robot):
-                        hasRobot = True
+                        robot = ent
                     elif isinstance(ent, Button):
                         # Red... (dark pink)
                         self.render_context.fill(rect,
@@ -70,14 +70,17 @@ class Renderer():
                         # Dark grey
                         self.render_context.fill(rect,
                                                  color=sdl2.ext.Color(50, 50, 50))
-                if hasRobot:
+                if robot:
                     # Green
                     pRect = (rect[0]+rect[2]*1//8,
                              rect[1]+rect[3]*1//8,
                              rect[2]*3//4,
                              rect[3]*3//4)
+                    shade = max(255 - robot.age * 10, 0)
                     self.render_context.fill(pRect,
-                                             color=sdl2.ext.Color(0, 200, 0))
+                                             color=sdl2.ext.Color(shade, shade, shade))
+                    self.render_context.draw_rect(pRect,
+                                                  color=sdl2.ext.Color(0, 0, 0))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0), size=32):
         """
