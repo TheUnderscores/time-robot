@@ -26,6 +26,7 @@ class Robot(Entity):
                 'action': None,
                 'time_tick': None
             },
+            'step': step_number,
             'position': Frozen(self.position()),
             'level': Frozen(self.level),
             'state': self.state
