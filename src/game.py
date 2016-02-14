@@ -16,15 +16,43 @@ directions_to_additions = {
     'left':  (-1,0),
     'right': (1,0)}
 
+class GUIButton:
+    buttonObj = None
+    text = ""
+    textPos = Point(0, 0)
+
+    def __init__(self, pos, size, onclick, uiFactory,
+                 text="",
+                 textPos=Point(0, 0),
+                 color=sdl2.ext.Color(255,255,255),
+                 textColor=sdl2.ext.Color(0,0,0)):
+        """
+        Create a new GUI button object
+        """
+        self.buttonObj = uiFactory.from_color(sdl2.ext.CHECKBUTTON,
+                                         color,
+                                         size=(size.x, size.y))
+        self.buttonObj.click += onclick
+        self.buttonObj.position = (pos.x, pos.y)
+        self.text = text
+        self.textPos = pos + textPos
+
+    def draw(self, renderer):
+        """
+        Draws the button.
+        """
+        renderer.spriteRenderer.render(self.buttonObj)
+        renderer.draw_text(self.textPos.x, self.textPos.y, self.text)
+
 class Game:
     renderer = None
     uiFactory = None
     uiProcessor = None
     buttons = []
-    buttons_text = []
     level = None
     hasWon = False
     hasLost = False
+    paused = False
 
     def __init__(self):
         """
@@ -37,18 +65,35 @@ class Game:
         # Create quit button
         def onclick_quit(button, event):
             self.quitGame()
-        self.createButton(Point(10, 10), Point(150, 50),
-                          onclick_quit,
-                          "Quit", Point(50, 10),
-                          color=sdl2.ext.Color(255, 0, 0))
+        self.buttons.append(GUIButton(Point(10, 10),
+                                      Point(150, 50),
+                                      onclick_quit,
+                                      self.uiFactory,
+                                      text="Quit",
+                                      textPos=Point(50, 10),
+                                      color=sdl2.ext.Color(255, 0, 0)))
 
         # Create button for running code
         def onclick_runcode(button, event):
             pass#TODO: run player code
-        self.createButton(Point(170, 10), Point(150, 50),
-                          onclick_runcode,
-                          "Run Code", Point(20, 10),
-                          color=sdl2.ext.Color(0, 255, 0))
+        self.buttons.append(GUIButton(Point(170, 10),
+                                      Point(150, 50),
+                                      onclick_runcode,
+                                      self.uiFactory,
+                                      text="Run Code",
+                                      textPos=Point(20, 10),
+                                      color=sdl2.ext.Color(0, 255, 0)))
+
+        # Create pause button
+        def onclick_pause(button, event):
+            self.paused = not self.paused
+        self.buttons.append(GUIButton(Point(330, 10),
+                                      Point(150, 50),
+                                      onclick_pause,
+                                      self.uiFactory,
+                                      text="Pause",
+                                      textPos=Point(40, 10),
+                                      color=sdl2.ext.Color(0, 0, 255)))
 
     def quitGame(self):
         """
@@ -84,10 +129,11 @@ class Game:
         self.renderer.render_level(self.level,
                                    Point(0, 90),
                                    Point(winSize[0], winSize[1]-90))
-        self.renderer.spriteRenderer.render(self.buttons)
-        for posAndText in self.buttons_text:
-            self.renderer.draw_text(*posAndText)
+        for b in self.buttons:
+            b.draw(self.renderer)
 
+        if self.paused:
+            self.renderer.draw_textWithOutline(200, 250, "Paused", size=150)
         if self.hasWon:
             self.renderer.draw_textWithOutline(150, 250, "Youre Winner!", size=100)
         elif self.hasLost:
@@ -113,8 +159,9 @@ class Game:
                     print("Exiting game...")
                     running = False
                     break
-                self.uiProcessor.dispatch(self.buttons, e)
-            if not self.hasWon and not self.hasLost:
+                buttonObjs = [b.buttonObj for b in self.buttons]
+                self.uiProcessor.dispatch(buttonObjs, e)
+            if not (self.hasWon or self.hasLost or self.paused):
                 status = self.updateEntities()
                 if status == "win":
                     self.hasWon = True
