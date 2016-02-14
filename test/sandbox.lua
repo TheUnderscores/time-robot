@@ -1,5 +1,9 @@
 local sandbox = {}
 
+if _VERSION ~= 'Lua 5.1' then
+	print('WARN: Sandbox is designed for Lua 5.1')
+end
+
 local safeEnv = {
 	assert = assert,
 	error = error,
