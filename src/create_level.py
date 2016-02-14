@@ -7,7 +7,7 @@ def read_level(level_file):
         with open(level_file, 'r') as f:
             for line in f:
                 line = line.replace('\r', '')
-                if line == '\n'
+                if line == '\n':
                     break
                 level.append(line[:-1])
     return level
