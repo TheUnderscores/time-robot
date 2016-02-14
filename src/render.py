@@ -15,6 +15,9 @@ class Renderer():
         self.render_window.show()
 
         self.render_context = sdl2.ext.Renderer(self.render_window)
+
+        self.render_context.draw_rect((0, 0, w, h), sdl2.ext.Color(0, 0, 0, 0))
+
         self.spriteFactory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE,
             renderer=self.render_context)
 
