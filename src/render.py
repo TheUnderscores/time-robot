@@ -3,12 +3,7 @@ import sdl2.ext
 import ctypes
 import sys
 
-from level import Level
-from entity import Entity
-from point import Point
-from robot import Robot
-from button import Button
-from exitdoor import ExitDoor
+from classes import *
 
 class Renderer():
     render_window = None
@@ -73,6 +68,10 @@ class Renderer():
                     # Orange
                     self.render_context.fill(rect,
                                              color=sdl2.ext.Color(255, 140, 0))
+                elif isinstance(ent, Wall):
+                    # Dark grey
+                    self.render_context.fill(rect,
+                                             color=sdl2.ext.Color(50, 50, 50))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0), size=32):
         """
