@@ -1,6 +1,14 @@
 import sdl2
 import sdl2.ext
+import ctypes
 import sys
+
+from level import Level
+from entity import Entity
+from point import Point
+from robot import Robot
+from button import Button
+from exitdoor import ExitDoor
 
 class Renderer():
     render_window = None
@@ -26,12 +34,37 @@ class Renderer():
                                            size=32,
                                            color=sdl2.ext.Color(255, 255, 255))
 
-    def render_level(self, board):
+    def render_level(self, level):
         """
-        A 2D board of symbols to render,
-        indexed Y first, ala board[y][x]
+        A 2D level of symbols to render,
+        indexed Y first, ala level[y][x]
         """
-        pass
+        winSize = Point(*self.render_window.size)
+        lvlSize = Point(level.width, level.height)
+        scale = winSize / lvlSize
+        blockSize = scale - (scale * 1/10)
+        scale.castInt()
+        blockSize.castInt()
+        for point, stack in level.cells():
+            point = point * scale
+            rect = (point.x, point.y, blockSize.x, blockSize.y)
+
+            if not stack:
+                # Light gray
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(176, 176, 176))
+            elif isinstance(stack[0], Robot):
+                # Green
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(0, 255, 0))
+            elif isinstance(stack[0], Button):
+                # Red... (dark pink)
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(255, 0, 0))
+            elif isinstance(stack[0], ExitDoor):
+                # Orange
+                self.render_context.fill(rect,
+                                              color=sdl2.ext.Color(255, 140, 0))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0)):
         """

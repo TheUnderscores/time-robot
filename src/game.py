@@ -13,6 +13,8 @@ directions_to_additions = {
     'left':  (-1,0),
     'right': (1,0)}
 
+import test_level
+
 class Game:
     renderer = None
     uiFactory = None
@@ -57,7 +59,7 @@ class Game:
         """
         Draws game elements.
         """
-        self.renderer.render_board(None)#TODO: get board
+        self.renderer.render_level(test_level.starting_level)#TODO: get board
         self.renderer.spriteRenderer.render(self.buttons)
         for posAndText in self.buttons_text:
             self.renderer.draw_text(*posAndText)

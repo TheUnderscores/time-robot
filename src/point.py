@@ -10,3 +10,22 @@ class Point:
     def __iadd__(self, oth):
         self.x += oth.x
         self.y += oth.y
+
+    def __sub__(self, i):
+        return Point(self.x-i.x, self.y-i.y)
+
+    def __mul__(self, i):
+        if isinstance(i, Point):
+            return Point(self.x*i.x, self.y*i.y)
+        else:
+            return Point(self.x*i, self.y*i)
+
+    def __truediv__(self, i):
+        if isinstance(i, Point):
+            return Point(self.x/i.x, self.y/i.y)
+        else:
+            return Point(self.x/i, self.y/i)
+
+    def castInt(self):
+        self.x = int(self.x)
+        self.y = int(self.y)
