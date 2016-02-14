@@ -1,7 +1,8 @@
 import Point from point
+import Entity from entity
 
 class Level:
-    def __init__(self,ent_field=None,width=10,height=10):
+    def __init__(self,ent_field=None,width=20,height=20):
         """Create a new level, optionally with an initial field of entities to start with. Requires either a field or dimensions"""
         if ent_field is None:
             self.ent_field = []
@@ -11,7 +12,9 @@ class Level:
                 for j in range(width):
                     row.append([])
         else:
-            self.ent_field = ent_field                    
+            self.ent_field = ent_field
+        self.height = len(self.ent_field)
+        self.width  = len(self.ent_field[0])
 
     def cells(self):
         """Iterate over each cell in the level, get a position and list of things in that cell"""
@@ -39,6 +42,13 @@ class Level:
                     self.add(cell.delete(ent),to_point)
                     return
 
+    def entities(type=Entity):
+        """Get all entities from the field, optionally constrain to a certain type"""
+        for cell in self.cells():
+            for ent in cell:
+                if isinstance(ent, type):
+                    yield ent
+                    
     def destroy(self,point):
         """Destroys all entities at point"""
         self.ent_field[self.y][self.x] = []

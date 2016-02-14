@@ -1,17 +1,19 @@
 def move_up(robot):
-	pass
+	govenor.action = 'up'
 
 def move_down(robot):
-	pass
+	govenor.action = 'down'
 
 def move_left(robot):
-	pass
+	govenor.action = 'left'
 
 def move_right(robot):
-	pass
+	govenor.action = 'right'
 
 def reverse_time(ticks):
-	pass
+	govenor.action = 'time'
+        govenor.time_tick = current_tick - ticks
 
 def set_time(tick):
-	pass
+	govenor.action = 'time'
+        govenor.time_tick = tick
