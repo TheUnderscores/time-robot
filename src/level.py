@@ -42,11 +42,11 @@ class Level:
                     self.add(cell.delete(ent),to_point)
                     return
 
-    def entities(type=Entity):
+    def entities(self, typ=Entity):
         """Get all entities from the field, optionally constrain to a certain type"""
         for cell in self.cells():
             for ent in cell:
-                if isinstance(ent, type):
+                if isinstance(ent, typ):
                     yield ent
                     
     def destroy(self,point):

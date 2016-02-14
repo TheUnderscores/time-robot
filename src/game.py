@@ -71,7 +71,7 @@ class Game:
         starting_level = Level()
         button1 = Button(starting_level)
         button2 = Button(starting_level)
-        robot = Robot() #TODO: Pass arguments to this
+        robot = Robot(None) #TODO: Pass arguments to this
         starting_level.add(button1,Point(3,3))
         starting_level.add(button2,Point(6,3))
         starting_level.add(robot,Point(6,6))
