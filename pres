@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ $1 -eq 1 ]
+then
+    python3 src/main.py src/levels/followLeader.trl src/levels/followLeader.py
+elif [ $1 -eq 2 ]
+then
+    python3 src/main.py src/levels/simple.trl src/levels/simple.py
+elif [ $1 -eq 3 ]
+then
+    python3 src/main.py src/levels/demo_1.trl src/levels/demo_1.py
+fi
