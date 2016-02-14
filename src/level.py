@@ -1,5 +1,5 @@
-import Point from point
-import Entity from entity
+from point import Point
+from entity import Entity
 
 class Level:
     def __init__(self,ent_field=None,width=20,height=20):
