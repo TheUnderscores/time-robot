@@ -171,7 +171,6 @@ class Game:
                 new_state.add(new_robot,robot.position(old_state))
                 #the robot does nothing
 
-        print("master_state_i", master_state_i)
         if master_state_i is not None:                
             master_state = potential_states[master_state_i]
             #The master robot has traveled back in time

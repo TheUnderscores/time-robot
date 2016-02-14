@@ -5,7 +5,6 @@ from exitdoor import ExitDoor
 from wall import Wall
 from level import Level
 from button import Button
-#from classes import Point, ExitDoor, Button, Wall, Level
 import robot_funcs
 
 class Robot(Entity):
@@ -50,17 +49,10 @@ class Robot(Entity):
             'Wall': Wall,
             'Level': Level,            
         }
-
-        #to_add = {}
-        #for n in dir(robot_funcs):
-        #    to_add[n] = robot_funcs[n]
-        #namespace.update(to_add) #add helper funcs to namespace
         
         #*drumroll*
         exec(self.code_string,namespace) #NOT secure, can still access os
         #Tah-dah!
-
-        print(str(namespace['governor']))
         
         gov = namespace.get('governor',{})
         action = gov.get('action',None)
