@@ -122,11 +122,18 @@ class Game:
             if action in directions_to_additions.keys():
                 direction = directions_to_additions[action]
                 new_pos = robot.position(old_state) + Point(*direction)
-                new_robot = copy.deepcopy(robot)
-                #new_robot.__level = new_state
-                new_state.add(new_robot,new_pos)
-                if amount is not None:
-                    print("WARN: Was told to move, but amount is also set. Possible bug")
+                if (new_pos.x >= 0 and new_pos.x < new_state.width and
+                    new_pos.y >= 0 and new_pos.y < new_state.height and
+                    not new_state.spot_has(new_pos,Wall)):                    
+                    new_robot = copy.deepcopy(robot)
+                    #new_robot.__level = new_state
+                    new_state.add(new_robot,new_pos)
+                    if amount is not None:
+                        print("WARN: Was told to move, but amount is also set. Possible bug")
+                else:
+                    new_robot = copy.deepcopy(robot)
+                    new_state.add(new_robot,robot.position(old_state))
+                    print("WARN: invalid move (into boundry or wall), staying still")                                  
             elif action == 'time':
                 if amount >= len(self.timeline): #invalid
                     print("tried to travel to the future(just wait)")
@@ -146,6 +153,8 @@ class Game:
                 new_state.add(new_robot,robot.position(old_state))
             else:
                 print("Your program sucks user")
+                new_robot = copy.deepcopy(robot)
+                new_state.add(new_robot,robot.position(old_state))
                 #the robot does nothing
 
         print("END OF FOR")#DEBUG
