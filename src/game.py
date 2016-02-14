@@ -2,6 +2,16 @@ import render
 import sdl2
 import sdl2.ext
 import time
+import copy
+
+from classes import * #OH NO ITS THE END OF THE WORLD
+from switch import Switch
+
+directions_to_additions = {
+    'up':    (0,-1),
+    'down':  (0,1),
+    'left':  (-1,0),
+    'right': (1,0)}
 
 import test_level
 
@@ -58,6 +68,14 @@ class Game:
         """
         Initiates the main game loop.
         """
+        starting_level = Level()
+        button1 = Button(starting_level)
+        button2 = Button(starting_level)
+        robot = Robot() #TODO: Pass arguments to this
+        starting_level.add(button1,Point(3,3))
+        starting_level.add(button2,Point(6,3))
+        starting_level.add(robot,Point(6,6))
+        timeline = Timeline(starting_level)
         running = True
         while running:
             events = sdl2.ext.get_events()
@@ -67,4 +85,10 @@ class Game:
                     running = False
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
+            new_state = copy.deepcopy(timeline.states[-1])
+            for robot in new_state.entities(Robot):
+                action,amount = robot.run(new_state,
+                                          timeline.states.length-1)
+                p = None
+
             self.draw()
