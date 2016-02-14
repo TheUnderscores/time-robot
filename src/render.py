@@ -31,8 +31,8 @@ class Renderer():
 
         self.spriteRenderer = self.spriteFactory.create_sprite_render_system(self.render_window)
         self.fontManager = sdl2.ext.FontManager("lib/square-deal.ttf",
-                                           size=32,
-                                           color=sdl2.ext.Color(255, 255, 255))
+                                                size=32,
+                                                color=sdl2.ext.Color(255, 255, 255))
 
     def clearScreen(self, bgcolor=sdl2.ext.Color(0, 0, 0)):
         """
@@ -74,10 +74,11 @@ class Renderer():
                     self.render_context.fill(rect,
                                              color=sdl2.ext.Color(255, 140, 0))
 
-    def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0)):
+    def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0), size=32):
         """
         Creates text to render.
         """
+        self.fontManager.size = size
         textSprite = self.spriteFactory.from_text(text,
                                                   fontmanager=self.fontManager,
                                                   color=color)
