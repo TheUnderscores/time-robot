@@ -4,6 +4,8 @@ import sdl2.ext
 import time
 import copy
 
+import create_level
+
 from classes import * #OH NO ITS THE END OF THE WORLD
 from switch import Switch
 from point import Point
@@ -20,6 +22,7 @@ class Game:
     uiProcessor = None
     buttons = []
     buttons_text = []
+    level = None
 
     def __init__(self):
         """
@@ -77,7 +80,7 @@ class Game:
                                           color=sdl2.ext.Color(0, 0, 0))
         self.renderer.render_context.fill((0, 70, winSize[0], 10),
                                           color=sdl2.ext.Color(255, 255, 255))
-        self.renderer.render_level(test_level.starting_level,
+        self.renderer.render_level(self.level,
                                    Point(0, 90),
                                    Point(winSize[0], winSize[1]-90))
         self.renderer.spriteRenderer.render(self.buttons)
@@ -88,18 +91,12 @@ class Game:
         """
         Initiates the main game loop.
         """
-        starting_level = Level()
-        button1 = Button(starting_level)
-        button2 = Button(starting_level)
+        self.level = create_level.setup_level(level_file)
         with open(code_file, 'r') as f:
             code_string = f.read()
-        robot = Robot(starting_level, code_string)
-        starting_level.add(button1,Point(3,3))
-        starting_level.add(button2,Point(6,3))
-        starting_level.add(robot,Point(6,6))
-        timeline = Timeline(starting_level)
+        robot = Robot(self.level, code_string)
+        timeline = Timeline(level)
         running = True
-        foo = 0 #DEBUG
         while running:
             events = sdl2.ext.get_events()
             for e in events:
