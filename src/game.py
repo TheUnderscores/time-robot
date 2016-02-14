@@ -16,13 +16,43 @@ directions_to_additions = {
     'left':  (-1,0),
     'right': (1,0)}
 
+class GUIButton:
+    buttonObj = None
+    text = ""
+    textPos = Point(0, 0)
+
+    def __init__(self, pos, size, onclick, uiFactory,
+                 text="",
+                 textPos=Point(0, 0),
+                 color=sdl2.ext.Color(255,255,255),
+                 textColor=sdl2.ext.Color(0,0,0)):
+        """
+        Create a new GUI button object
+        """
+        self.buttonObj = uiFactory.from_color(sdl2.ext.CHECKBUTTON,
+                                         color,
+                                         size=(size.x, size.y))
+        self.buttonObj.click += onclick
+        self.buttonObj.position = (pos.x, pos.y)
+        self.text = text
+        self.textPos = pos + textPos
+
+    def draw(self, renderer):
+        """
+        Draws the button.
+        """
+        renderer.spriteRenderer.render(self.buttonObj)
+        renderer.draw_text(self.textPos.x, self.textPos.y, self.text)
+
 class Game:
     renderer = None
     uiFactory = None
     uiProcessor = None
     buttons = []
-    buttons_text = []
     level = None
+    hasWon = False
+    hasLost = False
+    paused = False
 
     def __init__(self):
         """
@@ -35,18 +65,35 @@ class Game:
         # Create quit button
         def onclick_quit(button, event):
             self.quitGame()
-        self.createButton(Point(10, 10), Point(150, 50),
-                          onclick_quit,
-                          "Quit", Point(50, 10),
-                          color=sdl2.ext.Color(255, 0, 0))
+        self.buttons.append(GUIButton(Point(10, 10),
+                                      Point(150, 50),
+                                      onclick_quit,
+                                      self.uiFactory,
+                                      text="Quit",
+                                      textPos=Point(50, 10),
+                                      color=sdl2.ext.Color(255, 0, 0)))
 
         # Create button for running code
         def onclick_runcode(button, event):
             pass#TODO: run player code
-        self.createButton(Point(170, 10), Point(150, 50),
-                          onclick_runcode,
-                          "Run Code", Point(20, 10),
-                          color=sdl2.ext.Color(0, 255, 0))
+        self.buttons.append(GUIButton(Point(170, 10),
+                                      Point(150, 50),
+                                      onclick_runcode,
+                                      self.uiFactory,
+                                      text="Run Code",
+                                      textPos=Point(20, 10),
+                                      color=sdl2.ext.Color(0, 255, 0)))
+
+        # Create pause button
+        def onclick_pause(button, event):
+            self.paused = not self.paused
+        self.buttons.append(GUIButton(Point(330, 10),
+                                      Point(150, 50),
+                                      onclick_pause,
+                                      self.uiFactory,
+                                      text="Pause",
+                                      textPos=Point(40, 10),
+                                      color=sdl2.ext.Color(0, 0, 255)))
 
     def quitGame(self):
         """
@@ -75,22 +122,30 @@ class Game:
         """
         Draws game elements.
         """
+        self.renderer.clearScreen()
         winSize = self.renderer.render_window.size
-        self.renderer.render_context.fill((0, 0, winSize[0], winSize[1]),
-                                          color=sdl2.ext.Color(0, 0, 0))
         self.renderer.render_context.fill((0, 70, winSize[0], 10),
                                           color=sdl2.ext.Color(255, 255, 255))
         self.renderer.render_level(self.level,
                                    Point(0, 90),
                                    Point(winSize[0], winSize[1]-90))
-        self.renderer.spriteRenderer.render(self.buttons)
-        for posAndText in self.buttons_text:
-            self.renderer.draw_text(*posAndText)
+        for b in self.buttons:
+            b.draw(self.renderer)
+
+        if self.paused:
+            self.renderer.draw_textWithOutline(200, 250, "Paused", size=150)
+        if self.hasWon:
+            self.renderer.draw_textWithOutline(150, 250, "Youre Winner!", size=100)
+        elif self.hasLost:
+            self.renderer.draw_textWithOutline(70, 225, "Youre a Disgrace", size=100)
+            self.renderer.draw_textWithOutline(120, 325, "to Your Family", size=100)
 
     def startGame(self, level_file, code_file):
         """
         Initiates the main game loop.
         """
+        self.hasWon = False
+        self.hasLost = False
         with open(code_file, 'r') as f:
             code_string = f.read()
         self.level = create_level.setup_level(level_file, code_string)
@@ -104,19 +159,24 @@ class Game:
                     print("Exiting game...")
                     running = False
                     break
-                self.uiProcessor.dispatch(self.buttons, e)
-            running &= self.harryPotter()
+                buttonObjs = [b.buttonObj for b in self.buttons]
+                self.uiProcessor.dispatch(buttonObjs, e)
+            if not (self.hasWon or self.hasLost or self.paused):
+                status = self.updateEntities()
+                if status == "win":
+                    self.hasWon = True
+                elif status == "lose":
+                    self.hasLost = True
             time.sleep(1)
             self.draw()
 
-    def harryPotter(self):
+    def updateEntities(self):
         master_state_i = None
         potential_states = [None] * len(self.timeline)
         old_state = self.timeline.states[-1]
         new_state = copy.deepcopy(old_state)
         for pos,rob in new_state.entities_pos(Robot):
             new_state.remove(rob,pos)
-            print("length of timeline", len(self.timeline))#DEBUG
         for pos,robot in self.timeline.states[-1].entities_pos(Robot):
             action,amount = robot.run(len(self.timeline)-1,new_state,copy.deepcopy(old_state),pos)
             if action in directions_to_additions.keys():
@@ -157,8 +217,6 @@ class Game:
                 new_state.add(new_robot,robot.position(old_state))
                 #the robot does nothing
 
-        print("END OF FOR")#DEBUG
-        print("master_state_i", master_state_i)
         if master_state_i is not None:                
             master_state = potential_states[master_state_i]
             #The master robot has traveled back in time
@@ -183,18 +241,24 @@ class Game:
                     master_on_exit = True                     
                     break
             if master_on_exit: #YOU WIN
-                print("YOU'RE WINNER!")
-                return False
+                return "win"
                     
         for pos,cell in new_state.cells():
-            count_robots = 0
+            robots = []
             for ent in cell:
                 if isinstance(ent,Robot):
-                    count_robots += 1
-            if count_robots > 1:
+                    robots.append(ent)
+            if len(robots) > 1:
+                masterDead = False
+                for r in robots:
+                    if r.master:
+                        masterDead = True
+                        break
                 new_state.destroy(pos)
-                print("Your robots have exploded")
+                if masterDead:
+                    print("Your master robot has exploded")
+                    return "lose"
+                else:
+                    print("Your robots have exploded")
         self.level = new_state
-        for pos,robot in new_state.entities_pos(Robot):
-            print("a robot position: {},{}".format(pos.x,pos.y)) #DEBUG
-        return True
+        return "continue"
