@@ -51,18 +51,20 @@ class Renderer():
                 # Light gray
                 self.render_context.fill(rect,
                                               color=sdl2.ext.Color(176, 176, 176))
-            elif isinstance(stack[0], Robot):
-                # Green
-                self.render_context.fill(rect,
-                                              color=sdl2.ext.Color(0, 255, 0))
-            elif isinstance(stack[0], Button):
-                # Red... (dark pink)
-                self.render_context.fill(rect,
-                                              color=sdl2.ext.Color(255, 0, 0))
-            elif isinstance(stack[0], ExitDoor):
-                # Orange
-                self.render_context.fill(rect,
-                                              color=sdl2.ext.Color(255, 140, 0))
+            else:
+                ent = stack[len(stack)-1]
+                if isinstance(ent, Robot):
+                    # Green
+                    self.render_context.fill(rect,
+                                             color=sdl2.ext.Color(0, 255, 0))
+                elif isinstance(ent, Button):
+                    # Red... (dark pink)
+                    self.render_context.fill(rect,
+                                             color=sdl2.ext.Color(255, 0, 0))
+                elif isinstance(ent, ExitDoor):
+                    # Orange
+                    self.render_context.fill(rect,
+                                             color=sdl2.ext.Color(255, 140, 0))
 
     def draw_text(self, x, y, text, color=sdl2.ext.Color(0,0,0)):
         """
