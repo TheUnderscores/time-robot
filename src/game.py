@@ -14,8 +14,6 @@ directions_to_additions = {
     'left':  (-1,0),
     'right': (1,0)}
 
-import test_level
-
 class Game:
     renderer = None
     uiFactory = None
@@ -93,7 +91,9 @@ class Game:
         starting_level = Level()
         button1 = Button(starting_level)
         button2 = Button(starting_level)
-        robot = Robot(None) #TODO: Pass arguments to this
+        with open(code_file, 'r') as f:
+            code_string = f.read()
+        robot = Robot(starting_level, code_string)
         starting_level.add(button1,Point(3,3))
         starting_level.add(button2,Point(6,3))
         starting_level.add(robot,Point(6,6))
@@ -108,10 +108,74 @@ class Game:
                     running = False
                     break
                 self.uiProcessor.dispatch(self.buttons, e)
+            master_state_i = None
+            potential_states = [None for i in range(len(timeline))]
             new_state = copy.deepcopy(timeline.states[-1])
             for robot in new_state.entities(Robot):
                 action,amount = robot.run(new_state,
                                           timeline.states.length-1)
-                p = None
-
+                if action in directions_to_additions.keys():
+                    direction = directions_to_additions[action]
+                    new_pos = robot.position + direction
+                    new_state.move(robot,new_pos)
+                    if amount is not None:
+                        pass #TODO: warn the user about this    
+                elif action == 'time':
+                    if amount >= len(timeline): #invalid
+                        pass #TODO: Warn user
+                    else:
+                        if potential_states[amount] is None:
+                            new_state = potential_states[amount] = deep_clone(timeline.states[amount])
+                            for robot in new_state.entities(Robot):
+                                robot.master = False
+                        new_state = potential_states[amount]
+                        dup_rob = clone.deep_clone(robot)
+                        dup_rob.level = new_state
+                        new_state.add(dup_rob,
+                                      robot.position)
+                        if robot.master:
+                            master_state_i = amount
+                elif action == 'none':
+                    pass #explicitly stay in the same spot    
+                else:
+                    pass
+                    #Tell the user their program sucks;
+                    #the robot does nothing
+            if master_state_i is not None:                
+                master_state = potential_states[master_state_i]
+                #The master robot has traveled back in time
+                if master_state_i > 0: 
+                    timeline = timeline.previous_state(master_state-1)
+                    timeline.add_state(master_state)
+                else:
+                    #Back to the beginning
+                    timeline = Timeline(master_state)
+            else:
+                #No time travel
+                timeline.add_state(new_state)
+            new_state = timeline.states[-1]
+            #^sets new state again in case time travel happenend
+            all_buttons_pressed = True
+            for pos,ent in new_state.entities_pos(Button):
+                all_buttons_pressed &= new_state.spot_has(pos,Robot)
+            if all_buttons_pressed: #Oh man!
+                master_on_exit = False
+                for pos,ent in new_state.entities_pos(ExitDoor):
+                    if new_state.spot_has(pos,Robot):
+                        master_on_exit = True
+                        break
+                if master_on_exit: #YOU WIN
+                    print("YOU'RE WINNER!")
+                    running = False
+            
+            for pos,cell in new_state.cells():
+                count_robots = 0
+                for ent in cell:
+                    if isinstance(ent,Robot):
+                        count_robots += 1
+                if count_robots > 1:
+                    new_state.destroy(pos)
+                    #TODO: tell user that their robots have exploded
+                    pass
+            time.sleep(1)
             self.draw()
