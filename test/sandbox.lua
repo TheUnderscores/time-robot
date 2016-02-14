@@ -100,4 +100,10 @@ function sandbox.run(unsafeCode)
 	return pcall(unsafeFunction)
 end
 
+function sandbox.add(tableToAdd)
+	for key, value in pairs(tableToAdd) do
+		safeEnv[key] = value
+	end
+end
+
 return sandbox
