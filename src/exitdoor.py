@@ -1,2 +1,2 @@
-class Exit(Entity):
+class ExitDoor(Entity):
     #nothing extra I think...
