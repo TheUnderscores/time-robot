@@ -1,6 +1,5 @@
 from entity import Entity
 from frozen import Frozen
-import clone
 import robot_funcs
 
 class Robot(Entity):

@@ -1,19 +1,25 @@
 def move_up(robot):
-	governor.action = 'up'
+        global governor
+        governor.action = 'up'
 
 def move_down(robot):
-	governor.action = 'down'
+        global governor
+        governor.action = 'down'
 
 def move_left(robot):
-	governor.action = 'left'
+        global governor
+        governor.action = 'left'
 
 def move_right(robot):
-	governor.action = 'right'
+        global governor
+        governor.action = 'right'
 
 def reverse_time(ticks):
-	governor.action = 'time'
+        global governor
+        governor.action = 'time'
         governor.time_tick = current_tick - ticks
 
 def set_time(tick):
-	governor.action = 'time'
+        global governor
+        governor.action = 'time'
         governor.time_tick = tick
